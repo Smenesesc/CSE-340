@@ -4,3 +4,123 @@
 *:after {
   box-sizing: border-box;
 }
+/* base setup */
+:root{
+  --navy:#0a2540;   /* dark blue */
+  --red:#b00020;    /* red */
+  --white:#fff;
+  --black:#111;
+
+  --ink:var(--black);
+  --primary:var(--navy);
+  --accent:var(--red);
+  --panel:#f4f6f8;
+  --border:#d7dfe6;
+  --tile:#cfe2ff;          /* soft blue tile bg */
+
+  --maxw:1100px;
+  --radius:12px;
+}
+
+/* simple sizing reset */
+*,*:before,*:after{box-sizing:border-box}
+html,body{margin:0}
+img{max-width:100%;height:auto;display:block}
+.visually-hidden{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0;border:0;height:1px;width:1px;overflow:hidden}
+
+/* checkerboard page background */
+body{
+  font-family: system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--ink);
+  line-height:1.5;
+  background:url("/images/site/checkerboard.jpg") center/120px 120px repeat;
+}
+
+/* white shell that sits on the checkerboard */
+.container{max-width:var(--maxw);margin:0 auto;padding:0 16px}
+.shell{
+  background:var(--white);
+  border:3px solid #66cfe3; /* thin cyan ring like mock */
+  border-radius:16px;
+  box-shadow:0 10px 30px rgba(0,0,0,.08);
+  padding:20px 20px 32px;
+  margin:24px auto;
+}
+
+/* header area */
+#top-header{display:flex;justify-content:space-between;align-items:center;padding:12px 0}
+#top-header .brand{font-weight:800;text-decoration:none;color:var(--primary);font-size:1.6rem}
+#top-header .account{color:var(--primary);text-decoration:none;font-size:.9rem}
+#top-header .account:hover{text-decoration:underline}
+
+/* main nav bar (dark band) */
+.main-nav{background:#222b36;margin-bottom:14px;border-radius:6px}
+.main-nav ul{display:flex;gap:10px;list-style:none;margin:0;padding:8px 16px}
+.main-nav a{
+  color:var(--white);
+  text-decoration:none;
+  padding:6px 12px;
+  border-radius:6px;
+  font-weight:600;
+  font-size:.95rem;
+}
+.main-nav a.is-active,
+.main-nav a:hover{background:var(--primary)}
+
+/* hero */
+.hero{display:grid;gap:16px;align-items:center}
+.hero-copy h2{margin:10px 0 12px;font-size:1.8rem}
+.cta-card{
+  background:#eaf3ff; /* light blue box */
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px;
+  max-width:340px;
+}
+.cta-card h3{margin:0 0 8px;color:var(--primary)}
+.cta-card ul{margin:0 0 12px 18px}
+.btn{
+  display:inline-block;background:var(--primary);color:var(--white);
+  padding:10px 16px;border-radius:999px;text-decoration:none;font-weight:800;
+}
+.btn:hover{filter:brightness(.9)}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+/* panels (reviews + upgrades) */
+.home-panels{display:grid;gap:24px;margin-top:24px}
+.panel h3{margin:0 0 10px;color:#2b2b2b}
+.review-list{padding-left:18px}
+
+/* upgrade tiles like the mock’s blue cards */
+.grid-tiles{
+  list-style:none;padding:0;margin:0;
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;
+}
+.grid-tiles a{
+  display:grid;grid-template-rows:auto auto;justify-items:center;gap:6px;
+  text-align:center;text-decoration:none;
+  padding:12px;border:1px solid var(--border);border-radius:10px;
+  background:var(--tile);             /* blue tile */
+  color:var(--primary);               /* blue label */
+  font-weight:600;
+}
+
+/* footer strip */
+.site-footer{margin-top:28px;text-align:left;color:#555;border-top:1px solid var(--border);padding-top:12px}
+
+/* avoid sideways scroll */
+body{overflow-x:hidden}
+
+/* medium/large screens (match large mock) */
+@media (min-width:900px){
+  .hero{grid-template-columns:1fr 1fr}
+  .home-panels{grid-template-columns:1fr 1fr;align-items:start}
+
+  /* subtle overlay feel: nudge the spec card down/right */
+  .cta-card{transform:translate(10px,6px)}
+}
+
+/* extra-wide: keep tile grid tidy */
+@media (min-width:1200px){
+  .grid-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
