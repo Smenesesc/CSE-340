@@ -8,10 +8,13 @@
             },
             "ssh": "Disabled",
             "previewLimit": 50,
-            "server": "localhost",
+            "server": "dpg-d348a9buibrs73faa42g-a.oregon-postgres.render.com",
+            "port": 5432,
             "driver": "PostgreSQL",
-            "name": "render.com",
-            "connectString": "postgresql://cse340:6No7WdSyD7mEI706WTfWZ3pNGNh8RyD7@dpg-d2tqq5er433s73dlqmeg-a.oregon-postgres.render.com/cse340_1j6f"
+            "username": "cse340db2_xyaz_user",
+            "database": "cse340db2_xyaz",
+            "name": "CSE340 Render",
+            "password": "EMVLK6QayjaJQO6zBU7w4jrF3SMq0J5e"
         }
     ]
 }

@@ -32,4 +32,5 @@ invController.buildDetail = async function (req, res, next) {
   }
 }
 
+// export so routes can use it
 module.exports = invController
