@@ -11,6 +11,7 @@ const env = require("dotenv").config()
 const app = express()
 const static = require("./routes/static")
 const baseController = require("./controllers/baseController");
+const invRoutes = require("./routes/inventory")
 
 /* ***********************
  * View engine and templates
@@ -23,6 +24,7 @@ app.set('layout', 'layouts/layouts'); // not at views root
  * Routes
  *************************/
 app.use(static)
+app.use("/inv", invRoutes)
 // Index route (updated to use MVC controller)
 app.get("/", baseController.buildHome)
 
