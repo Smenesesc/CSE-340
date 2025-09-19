@@ -124,3 +124,19 @@ body{overflow-x:hidden}
 @media (min-width:1200px){
   .grid-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+/* detail layout: stacked on small, side-by-side on larger screens */
+.vehicle-detail { display: grid; gap: 1.5rem; }
+@media (min-width: 900px) {
+  .vehicle-detail { grid-template-columns: 1fr 1fr; align-items: start; }
+}
+
+.vehicle-detail__image img { width: 100%; height: auto; display: block; }
+.vehicle-detail__title { margin: 0 0 .5rem; line-height: 1.2; }
+.vehicle-detail__meta { list-style: none; padding: 0; margin: 0 0 1rem; }
+.vehicle-detail__meta li { margin: .25rem 0; }
+
+/* basic visually-hidden class for headers */
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
