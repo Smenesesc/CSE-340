@@ -1,81 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CSE Motors</title>
-  <link rel="stylesheet" href="/css/styles.css" media="screen" />
-</head>
-<body>
+<% /* Home view — body content only; layout supplies <html>, <head>, and <body> */ %>
+
+  <!-- hidden h1 for screen readers -->
   <h1 class="visually-hidden">CSE Motors</h1>
-
-  <!-- everything in the white shell -->
-  <main class="container shell">
-
-    <!-- header -->
-    <header id="top-header">
-      <a class="brand" href="/">CSE Motors</a>
-      <a class="account" href="#">My Account</a>
-    </header>
-
-    <!-- dark nav bar -->
-    <nav class="main-nav">
-      <ul class="container">
-        <li><a class="is-active" href="#">Home</a></li>
-        <li><a href="#">Custom</a></li>
-        <li><a href="#">Sedan</a></li>
-        <li><a href="#">SUV</a></li>
-        <li><a href="#">Truck</a></li>
-      </ul>
-    </nav>
-
-    <!-- hero section -->
-    <section class="hero">
-      <div class="hero-copy">
-        <h2>Welcome to CSE Motors!</h2>
-        <div class="cta-card">
-          <h3>DMC Delorean</h3>
-          <ul>
-            <li>3 Cup holders</li>
-            <li>Superman doors</li>
-            <li>Fuzzy dice</li>
-          </ul>
-          <a class="btn" href="/shop/delorean">Own Today</a>
-        </div>
+  
+  <!-- hero -->
+  <section class="hero">
+    <div class="hero-copy">
+      <h2>Welcome to CSE Motors!</h2>
+      <div class="cta-card">
+        <h3>DMC Delorean</h3>
+        <ul>
+          <li>3 Cup holders</li>
+          <li>Superman doors</li>
+          <li>Fuzzy dice</li>
+        </ul>
+        <a class="btn" href="/custom">Own Today</a>
       </div>
-      <figure class="hero-img">
-        <img src="/images/vehicles/delorean.jpg" alt="DMC Delorean car" />
-      </figure>
-    </section>
-
-    <!-- panels section -->
-    <section class="home-panels">
-      <article class="panel upgrades">
-        <h3>Delorean Upgrades</h3>
-        <ul class="grid-tiles">
-          <li><a href="#"><img src="/images/upgrades/flux-cap.png" alt="">Flux Capacitor</a></li>
-          <li><a href="#"><img src="/images/upgrades/flame.jpg" alt="">Flame Decals</a></li>
-          <li><a href="#"><img src="/images/upgrades/bumper_sticker.jpg" alt="">Bumper Stickers</a></li>
-          <li><a href="#"><img src="/images/upgrades/hub-cap.jpg" alt="">Hub Caps</a></li>
-        </ul>
-      </article>
-
-      <article class="panel reviews">
-        <h3>DMC Delorean Reviews</h3>
-        <ul class="review-list">
-          <li>“So fast it’s almost like traveling in time.” (4/5)</li>
-          <li>“Coolest ride on the road.” (4/5)</li>
-          <li>“I’m feeling McFly!” (5/5)</li>
-          <li>“The most futuristic ride of our day.” (4.5/5)</li>
-          <li>“80’s livin and I love it!” (5/5)</li>
-        </ul>
-      </article>
-    </section>
-
-    <!-- footer -->
-    <footer class="site-footer">
-      <small>© 2025, CSE 340 Santiago</small>
-    </footer>
-  </main>
-</body>
-</html>
+    </div>
+    <figure class="hero-img">
+      <img src="/images/vehicles/delorean.jpg" alt="DMC Delorean"
+           onerror="this.src='/images/vehicles/no-image.png'" />
+    </figure>
+  </section>
+  
+  <!-- panels -->
+  <section class="home-panels">
+    <article class="panel upgrades">
+      <h3>Delorean Upgrades</h3>
+      <ul class="grid-tiles">
+        <li><a href="#"><img src="/images/upgrades/flux-cap.png" alt="">Flux Capacitor</a></li>
+        <li><a href="#"><img src="/images/upgrades/flame.jpg" alt="">Flame Decals</a></li>
+        <li><a href="#"><img src="/images/upgrades/bumper_sticker.jpg" alt="">Bumper Stickers</a></li>
+        <li><a href="#"><img src="/images/upgrades/hub-cap.jpg" alt="">Hub Caps</a></li>
+      </ul>
+    </article>
+  
+    <article class="panel reviews">
+      <h3>DMC Delorean Reviews</h3>
+      <ul class="review-list">
+        <li>“So fast it’s almost like traveling in time.” (4/5)</li>
+        <li>“Coolest ride on the road.” (4/5)</li>
+        <li>“I’m feeling McFly!” (5/5)</li>
+        <li>“The most futuristic ride of our day.” (4.5/5)</li>
+        <li>“80’s livin and I love it!” (5/5)</li>
+      </ul>
+    </article>
+  </section>
+  
+  

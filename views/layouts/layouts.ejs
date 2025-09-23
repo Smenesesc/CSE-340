@@ -4,16 +4,21 @@
 
   <body>
     <div id="wrapper">
-      <%- include('../partials/header') %>
+      <div class="container">
+        <div class="shell">
+          <%- include('../partials/header') %>
 
-      <nav>
-        <%- include('../partials/navigation') %>
-      </nav>
+          <nav>
+            <%- include('../partials/navigation', { active: (typeof active !== 'undefined' ? active : '') }) %>
+          </nav>
 
-      <main>
-        <%- body %>
-      </main>
-      <%- include('../partials/footer') %>
+          <main>
+            <%- body %>
+          </main>
+
+          <%- include('../partials/footer') %>
+        </div>
+      </div>
     </div>
   </body>
 </html>

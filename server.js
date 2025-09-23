@@ -37,7 +37,8 @@ app.use(async (req, res, next) => {
  * Routes
  *************************/
 app.use(static)
-app.use("/inv", invRoutes)
+// mount inventory routes at root so /custom, /sedan, /sport, /suv, /truck, /detail/:invId work
+app.use("/", invRoutes)
 // Index route (updated to use MVC controller)
 app.get("/", baseController.buildHome)
 

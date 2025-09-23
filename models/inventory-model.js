@@ -6,12 +6,18 @@ async function getClassifications() {
   )
 }
 
-// single-vehicle fetch by id (parameterized)
+// single-vehicle fetch by id (parameterized) – ONLY columns that exist now
 async function getVehicleById(invId) {
   const sql = `
-    SELECT inv_id, inv_make, inv_model, inv_description, inv_image, inv_thumbnail, classification_id
-    FROM public.inventory
-    WHERE inv_id = $1
+    SELECT inv_id,
+           inv_make,
+           inv_model,
+           inv_description,
+           inv_image,
+           inv_thumbnail,
+           classification_id
+      FROM public.inventory
+     WHERE inv_id = $1
   `
   return await pool.query(sql, [invId])
 }

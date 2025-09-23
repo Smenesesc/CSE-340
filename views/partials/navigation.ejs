@@ -1,7 +1,11 @@
-<nav>
-<%- nav %>
-</nav>
-<!-- my site-wide nav -->
+<% const cur = (typeof active !== 'undefined') ? active : '' %>
 <nav class="main-nav">
-    <%- nav %>
-  </nav>
+  <ul class="container">
+    <li><a href="/"       class="<%= cur==='home'   ? 'is-active' : '' %>">Home</a></li>
+    <li><a href="/custom" class="<%= cur==='custom' ? 'is-active' : '' %>">Custom</a></li>
+    <li><a href="/sedan"  class="<%= cur==='sedan'  ? 'is-active' : '' %>">Sedan</a></li>
+    <li><a href="/sport"  class="<%= cur==='sport'  ? 'is-active' : '' %>">Sport</a></li>
+    <li><a href="/suv"    class="<%= cur==='suv'    ? 'is-active' : '' %>">SUV</a></li>
+    <li><a href="/truck"  class="<%= cur==='truck'  ? 'is-active' : '' %>">Truck</a></li>
+  </ul>
+</nav>

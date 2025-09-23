@@ -3,7 +3,8 @@ const baseController = {};
 
 baseController.buildHome = async function (req, res) {
   const nav = await utilities.getNav();
-  res.render("index", { title: "Home", nav });
+  // highlight Home tab too
+  res.render("index", { title: "Home", nav, active: "home" });
 };
 
 module.exports = baseController;

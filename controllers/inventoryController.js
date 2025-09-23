@@ -19,6 +19,8 @@ invController.buildDetail = async function (req, res, next) {
     const vehicle = result.rows[0]
     const nav = await utilities.getNav()
     const vehicleHTML = utilities.buildVehicleDetail(vehicle)
+
+    // build title from fields we *know* exist
     const pageTitle = `${vehicle.inv_make} ${vehicle.inv_model}`
 
     res.render("inventory/detail", {
@@ -32,5 +34,4 @@ invController.buildDetail = async function (req, res, next) {
   }
 }
 
-// export so routes can use it
 module.exports = invController
