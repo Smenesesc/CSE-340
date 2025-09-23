@@ -1,7 +1,7 @@
 const invModel = require("../models/inventory-model")
 const Util = {}
 
-/* Build the navigation menu */
+/* Build the navigation bar */
 Util.getNav = async function () {
   const data = await invModel.getClassifications()
   let list = "<ul>"
@@ -22,30 +22,27 @@ Util.getNav = async function () {
   return list
 }
 
-/* build the detail view for single vehicle */
-Util.buildVehicleDetail = function (v) {
-  // format price as USD and mileage with commas
-  const usd = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" })
-  const num = new Intl.NumberFormat("en-US")
-  const price = usd.format(Number(v.inv_price || 0))
-  const miles = num.format(Number(v.inv_miles || 0))
+/* Build the vehicle detail HTML */
+Util.buildVehicleDetail = function (item) {
+  // fallback values in case DB fields are null
+  const make = item.inv_make || "Unknown Make"
+  const model = item.inv_model || "Unknown Model"
+  const desc = item.inv_description || "No description available."
+  const img = item.inv_image || "/images/placeholder.png"
 
-  // return full HTML for the vehicle detail page
   return `
     <section class="vehicle-detail">
-      <figure class="vehicle-detail__image">
-        <img src="${v.inv_image}" alt="${v.inv_year} ${v.inv_make} ${v.inv_model}">
-      </figure>
-
-      <article class="vehicle-detail__content">
-        <h1>${v.inv_year} ${v.inv_make} ${v.inv_model}</h1>
-        <ul>
-          <li><strong>Price:</strong> ${price}</li>
-          <li><strong>Mileage:</strong> ${miles} miles</li>
-          <li><strong>Color:</strong> ${v.inv_color}</li>
+      <div class="vehicle-detail__image">
+        <img src="${img}" alt="Image of ${make} ${model}">
+      </div>
+      <div class="vehicle-detail__info">
+        <h1 class="vehicle-detail__title">${make} ${model}</h1>
+        <ul class="vehicle-detail__meta">
+          <li><strong>Make:</strong> ${make}</li>
+          <li><strong>Model:</strong> ${model}</li>
         </ul>
-        <p>${v.inv_description}</p>
-      </article>
+        <p>${desc}</p>
+      </div>
     </section>
   `
 }

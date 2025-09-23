@@ -1,4 +1,3 @@
-SELECT inv_id, inv_make, inv_model
+SELECT * 
 FROM public.inventory
-LIMIT 5;
-
+LIMIT 100;
