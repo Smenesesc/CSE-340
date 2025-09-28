@@ -1,0 +1,94 @@
+<% /* Add Inventory — I keep inputs “sticky” and use the select built in utilities */ %>
+
+<h1><%= title %></h1>
+
+<%- messages() %>
+
+<% if (typeof errors !== "undefined" && errors && errors.length) { %>
+  <div class="form-errors" role="alert" aria-live="assertive">
+    <ul>
+      <% errors.forEach(function(err){ %>
+        <li><%= err.msg %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<form class="auth-form" action="/inv/add-inventory" method="post" novalidate>
+  <div class="form-grid">
+    <div class="form-row">
+      <label for="inv_make">Make</label>
+      <input id="inv_make" name="inv_make" type="text" required value="<%= locals.inv_make || '' %>">
+    </div>
+
+    <div class="form-row">
+      <label for="inv_model">Model</label>
+      <input id="inv_model" name="inv_model" type="text" required value="<%= locals.inv_model || '' %>">
+    </div>
+
+    <div class="form-row">
+      <label for="inv_year">Year</label>
+      <input id="inv_year" name="inv_year" type="number" min="1900" max="2100" required value="<%= locals.inv_year || '' %>">
+    </div>
+
+    <div class="form-row full">
+      <label for="inv_description">Description</label>
+      <textarea id="inv_description" name="inv_description" rows="4" required><%= locals.inv_description || '' %></textarea>
+    </div>
+
+    <div class="form-row">
+      <label for="inv_image">Image Path</label>
+      <input id="inv_image" name="inv_image" type="text" required value="<%= locals.inv_image || '/images/vehicles/no-image.png' %>">
+    </div>
+
+    <div class="form-row">
+      <label for="inv_thumbnail">Thumbnail Path</label>
+      <input id="inv_thumbnail" name="inv_thumbnail" type="text" required value="<%= locals.inv_thumbnail || '/images/vehicles/no-image-tn.png' %>">
+    </div>
+
+    <div class="form-row">
+      <label for="inv_price">Price (USD)</label>
+      <input id="inv_price" name="inv_price" type="number" step="0.01" min="0" required value="<%= locals.inv_price || '' %>">
+    </div>
+
+    <div class="form-row">
+      <label for="inv_miles">Miles</label>
+      <input id="inv_miles" name="inv_miles" type="number" step="1" min="0" required value="<%= locals.inv_miles || '' %>">
+    </div>
+
+    <div class="form-row">
+      <label for="inv_color">Color</label>
+      <input id="inv_color" name="inv_color" type="text" required value="<%= locals.inv_color || '' %>">
+    </div>
+
+    <div class="form-row">
+      <label for="classificationList">Classification</label>
+      <!-- I pass in the prebuilt <select> so the “selected” sticks -->
+      <%- classificationSelect %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn" type="submit">Add Vehicle</button>
+  </div>
+</form>
+
+<p><a href="/inv">Back to Inventory Management</a></p>
+
+<script>
+  // Minimal client-side guardrails — I prefer catching obvious mistakes early.
+  (function(){
+    const form = document.querySelector('form.auth-form');
+    if (!form) return;
+    form.addEventListener('submit', function(e){
+      // year range sanity
+      const y = document.getElementById('inv_year');
+      const year = parseInt(y.value, 10);
+      if (isNaN(year) || year < 1900 || year > 2100) {
+        alert('Please enter a valid 4-digit year.');
+        e.preventDefault();
+        y.focus();
+      }
+    });
+  })();
+</script>

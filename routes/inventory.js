@@ -1,8 +1,14 @@
 const express = require("express")
 const router = express.Router()
 const invController = require("../controllers/inventoryController")
+const {
+  classificationRules,
+  checkClassification,
+  inventoryRules,
+  checkInventory,
+} = require("../utilities/inv-validation")
 
-// small helper to build the HTML string that detail.ejs expects
+/* ===== Small helper kept from your demo routes (optional showcase) ===== */
 function renderVehicleHTML({ image, name, price, description, color, miles }) {
   return `
     <h1>${name}</h1>
@@ -22,7 +28,33 @@ function renderVehicleHTML({ image, name, price, description, color, miles }) {
   `
 }
 
-// Custom
+/* ===== Assignment Task 1: Management View =====
+ * Access only by direct URL: /inv
+ * (I’m not linking this from anywhere per the instructions)
+ */
+router.get("/inv", invController.buildManagement)
+
+/* ===== Assignment Task 2: Add Classification ===== */
+router.get("/inv/add-classification", invController.buildAddClassification)
+
+router.post(
+  "/inv/add-classification",
+  classificationRules(),
+  checkClassification,
+  invController.addClassification
+)
+
+/* ===== Assignment Task 3: Add Inventory ===== */
+router.get("/inv/add-inventory", invController.buildAddInventory)
+
+router.post(
+  "/inv/add-inventory",
+  inventoryRules(),
+  checkInventory,
+  invController.addInventory
+)
+
+/* ===== Existing demo routes (kept) ===== */
 router.get("/custom", (req, res, next) => {
   try {
     const vehicleHTML = renderVehicleHTML({
@@ -37,7 +69,6 @@ router.get("/custom", (req, res, next) => {
   } catch (e) { next(e) }
 })
 
-// Sedan
 router.get("/sedan", (req, res, next) => {
   try {
     const vehicleHTML = renderVehicleHTML({
@@ -52,7 +83,6 @@ router.get("/sedan", (req, res, next) => {
   } catch (e) { next(e) }
 })
 
-// Sport
 router.get("/sport", (req, res, next) => {
   try {
     const vehicleHTML = renderVehicleHTML({
@@ -67,7 +97,6 @@ router.get("/sport", (req, res, next) => {
   } catch (e) { next(e) }
 })
 
-// SUV
 router.get("/suv", (req, res, next) => {
   try {
     const vehicleHTML = renderVehicleHTML({
@@ -82,7 +111,6 @@ router.get("/suv", (req, res, next) => {
   } catch (e) { next(e) }
 })
 
-// Truck
 router.get("/truck", (req, res, next) => {
   try {
     const vehicleHTML = renderVehicleHTML({
@@ -97,14 +125,12 @@ router.get("/truck", (req, res, next) => {
   } catch (e) { next(e) }
 })
 
-// DB-backed detail by ID (Task 1)
+/* DB-backed detail by ID (already part of your assignment) */
 router.get("/detail/:invId", (req, res, next) => {
-  try {
-    return invController.buildDetail(req, res, next)
-  } catch (e) { next(e) }
+  try { return invController.buildDetail(req, res, next) } catch (e) { next(e) }
 })
 
-// Intentional 500 route (Task 3)
+/* Intentional 500 route (test) */
 router.get("/debug/error", (req, res, next) => {
   try {
     const err = new Error("Intentional test error")

@@ -1,7 +1,7 @@
 const invModel = require("../models/inventory-model")
 const Util = {}
 
-/* Build the navigation bar */
+/* Build the navigation bar — I reuse classifications so the nav always reflects the DB */
 Util.getNav = async function () {
   const data = await invModel.getClassifications()
   let list = "<ul>"
@@ -22,15 +22,12 @@ Util.getNav = async function () {
   return list
 }
 
-/* Build the vehicle detail HTML */
+/* Build the vehicle detail HTML — tiny helper I keep in utilities to keep views simple */
 Util.buildVehicleDetail = function (item) {
-  // fields your table has
   const make  = item.inv_make  || "Unknown Make"
   const model = item.inv_model || "Unknown Model"
   const desc  = item.inv_description || "No description available."
   const img   = item.inv_image || "/images/vehicles/no-image.png"
-
-  // optional fields (shown only if they exist in DB later)
   const year  = item.inv_year  ?? null
   const color = item.inv_color ?? null
 
@@ -66,6 +63,22 @@ Util.buildVehicleDetail = function (item) {
       </div>
     </article>
   `
+}
+
+/* Build the classification <select> for forms — sticky via selected attr */
+Util.buildClassificationList = async function (classification_id = null) {
+  // I reuse the same data as the navbar so options always reflect the DB
+  const data = await invModel.getClassifications()
+  let classificationList =
+    '<select name="classification_id" id="classificationList" required>'
+  classificationList += "<option value=''>Choose a Classification</option>"
+  data.rows.forEach((row) => {
+    classificationList += `<option value="${row.classification_id}"${
+      (classification_id != null && row.classification_id == classification_id) ? " selected" : ""
+    }>${row.classification_name}</option>`
+  })
+  classificationList += "</select>"
+  return classificationList
 }
 
 module.exports = Util
