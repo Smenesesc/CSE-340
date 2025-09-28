@@ -13,6 +13,37 @@ const static = require("./routes/static")
 const baseController = require("./controllers/baseController")
 const invRoutes = require("./routes/inventory")
 const utilities = require("./utilities")
+const session = require("express-session")
+const pool = require('./database/')
+const bodyParser = require("body-parser") // ADDED: body-parser to read form + JSON bodies
+
+// >>> ADDED: account routes (kept with other route requires)
+const accountRoutes = require("./routes/accountRoute") // accounts
+
+/* ***********************
+ * Middleware
+ * ************************/
+app.use(session({
+  store: new (require('connect-pg-simple')(session))({
+    createTableIfMissing: true,
+    pool,
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  name: 'sessionId',
+}))
+
+// Express Messages Middleware
+app.use(require('connect-flash')())
+app.use(function(req, res, next){
+  res.locals.messages = require('express-messages')(req, res)
+  next()
+})
+
+// ADDED: body parsing for JSON + URL-encoded form bodies
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
 /* ***********************
  * View engine and templates
@@ -41,6 +72,9 @@ app.use(static)
 app.use("/", invRoutes)
 // Index route (updated to use MVC controller)
 app.get("/", baseController.buildHome)
+
+// >>> ADDED: mount /account routes (keep base at '/account' here)
+app.use("/account", accountRoutes)
 
 /* ***********************
  * Local Server Information

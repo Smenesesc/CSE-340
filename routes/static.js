@@ -10,4 +10,3 @@ router.use('/js',     express.static(path.join(pub, 'js')));
 router.use('/images', express.static(path.join(pub, 'images')));
 
 module.exports = router;
-
