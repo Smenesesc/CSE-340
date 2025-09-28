@@ -2,33 +2,45 @@
 
     <!-- page title uses the controller-provided "title" -->
     <h1><%= title %></h1>
-  
-    <!-- empty line then express-messages (flash) output -->
+
+    <!-- flash messages -->
     <%- messages() %>
-  
+
+    <!-- server-side validation errors (list) -->
+    <% if (typeof errors !== "undefined" && errors.length) { %>
+      <div class="form-errors" role="alert" aria-live="assertive">
+        <ul>
+          <% errors.forEach(function(err){ %>
+            <li><%= err.msg %></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
     <!-- login form -->
     <section class="account-auth">
-      <form class="auth-form" action="/account/login" method="post" novalidate>
+      <!-- POST to /account/login for validation + (temp) success text -->
+      <form id="loginForm" class="auth-form" action="/account/login" method="post" novalidate>
         <!-- NOTE: using DB field names per Data Trail guidance -->
         <div class="form-row">
           <label for="account_email">Email address</label>
-          <input id="account_email" name="account_email" type="email" placeholder="you@example.com" required>
+          <!-- sticky email (password never sticky) -->
+          <input id="account_email" name="account_email" type="email" placeholder="you@example.com" required value="<%= locals.account_email %>">
         </div>
-  
+
         <div class="form-row">
           <label for="account_password">Password</label>
           <input id="account_password" name="account_password" type="password" placeholder="••••••••" required>
         </div>
-  
+
         <div class="form-actions">
           <button class="btn" type="submit">Sign in</button>
         </div>
       </form>
-  
+
       <p class="auth-alt">
         Don’t have an account?
         <!-- path mirrors /account/login style but points to register -->
         <a href="/account/register">Create one</a>
       </p>
     </section>
-  

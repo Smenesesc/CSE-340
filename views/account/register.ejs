@@ -2,55 +2,70 @@
 
     <!-- page title -->
     <h1><%= title %></h1>
-  
-    <!-- empty line then messages output -->
+
+    <!-- flash messages -->
     <%- messages() %>
-  
+
+    <!-- server-side validation errors (list) -->
+    <% if (typeof errors !== "undefined" && errors.length) { %>
+      <div class="form-errors" role="alert" aria-live="assertive">
+        <ul>
+          <% errors.forEach(function(err){ %>
+            <li><%= err.msg %></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
     <!-- registration form -->
     <section class="account-auth">
       <!-- ensure action path + POST method match route -->
       <form class="auth-form" action="/account/register" method="post" novalidate>
-        <!--using DB field names per Data Trail guidance -->
+        <!-- using DB field names per Data Trail guidance -->
         <div class="form-row">
           <label for="account_firstname">First name</label>
-          <input id="account_firstname" name="account_firstname" type="text" placeholder="First name" required>
+          <!-- sticky value via res.locals; safe if undefined -->
+          <input id="account_firstname" name="account_firstname" type="text" placeholder="First name" required value="<%= locals.account_firstname %>">
         </div>
-  
+
         <div class="form-row">
           <label for="account_lastname">Last name</label>
-          <input id="account_lastname" name="account_lastname" type="text" placeholder="Last name" required>
+          <!-- sticky -->
+          <input id="account_lastname" name="account_lastname" type="text" placeholder="Last name" required value="<%= locals.account_lastname %>">
         </div>
-  
+
         <div class="form-row">
           <label for="account_email">Email address</label>
-          <input id="account_email" name="account_email" type="email" placeholder="you@example.com" required>
+          <!-- sticky -->
+          <input id="account_email" name="account_email" type="email" placeholder="you@example.com" required value="<%= locals.account_email %>">
         </div>
-  
+
         <div class="form-row">
           <label for="account_password">Password</label>
+          <!-- DO NOT make password sticky -->
           <input id="account_password" name="account_password" type="password" placeholder="At least 12 characters" required>
           <small class="field-hint">
             Password must be at least 12 characters and include 1 uppercase letter, 1 number, and 1 special character.
           </small>
-          <!-- optional toggle, kept minimal -->
+          <!-- optional toggle -->
           <button class="btn btn-link toggle-pass" type="button" aria-controls="account_password" aria-pressed="false">
             Show password
           </button>
         </div>
-  
+
         <div class="form-actions">
           <button class="btn" type="submit">Create account</button>
         </div>
       </form>
-  
+
       <p class="auth-alt">
         Already have an account?
         <a href="/account/login">Sign in</a>
       </p>
     </section>
-  
+
     <script>
-      // minimal password visibility toggle
+      // minimal password visibility toggle (unchanged)
       (function () {
         const btn = document.querySelector(".toggle-pass")
         const input = document.getElementById("account_password")
@@ -63,4 +78,3 @@
         })
       })()
     </script>
-  

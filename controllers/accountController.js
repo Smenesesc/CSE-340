@@ -3,7 +3,8 @@
  * Only requires utilities for nav at this stage
  ******************************************/
 const utilities = require("../utilities") // nav, helpers
-const accountModel = require("../models/account-model") // ADDED: model for DB writes
+const accountModel = require("../models/account-model") // model for DB writes
+const bcrypt = require("bcryptjs") // for password hashing
 
 /* ****************************************
 *  Deliver login view
@@ -35,7 +36,7 @@ async function buildRegister(req, res, next) {
     res.render("account/register", {
       title: "Register",
       nav,
-      errors: null, // reserved for later validation wiring
+      errors: null, // reserved for validation wiring
     })
   } catch (err) {
     // forward to general error handler
@@ -46,6 +47,7 @@ async function buildRegister(req, res, next) {
 
 /* ****************************************
 *  Process Registration
+*  Hash password + store account
 * *************************************** */
 async function registerAccount(req, res, next) {
   try {
@@ -53,12 +55,32 @@ async function registerAccount(req, res, next) {
     // collect values from request body (names follow DB column names)
     const { account_firstname, account_lastname, account_email, account_password } = req.body
 
-    // write to DB via model (await the result)
+    // *************************************
+    // Hash the password before storing
+    // *************************************
+    let hashedPassword
+    try {
+      // bcrypt.hashSync(plainText, saltRounds)
+      // saltRounds=10 means hash re-applied 10x for security
+      hashedPassword = await bcrypt.hashSync(account_password, 10)
+    } catch (error) {
+      // if hashing fails, return with error notice
+      req.flash("notice", "Sorry, there was an error processing the registration.")
+      return res.status(500).render("account/register", {
+        title: "Register",
+        nav,
+        errors: null,
+      })
+    }
+
+    // *************************************
+    // Write to DB via model (pass hashed pw)
+    // *************************************
     const regResult = await accountModel.registerAccount(
       account_firstname,
       account_lastname,
       account_email,
-      account_password
+      hashedPassword // <--- use hashed password, not plain text
     )
 
     // if a result object (rows) came back, treat as success
