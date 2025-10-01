@@ -1,0 +1,17 @@
+<% /* Account Management — default /account view */ %>
+
+<h1><%= title %></h1>
+
+<%- messages() %>
+
+<% if (typeof errors !== "undefined" && errors && errors.length) { %>
+  <div class="form-errors" role="alert" aria-live="assertive">
+    <ul>
+      <% errors.forEach(function(err){ %>
+        <li><%= err.msg %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<p>You're logged in.</p>

@@ -1,4 +1,7 @@
 const invModel = require("../models/inventory-model")
+const jwt = require("jsonwebtoken") // <- added earlier: verify JWT from cookie
+require("dotenv").config() // <- added earlier: load ACCESS_TOKEN_SECRET
+
 const Util = {}
 
 /* Build the navigation bar — I reuse classifications so the nav always reflects the DB */
@@ -79,6 +82,52 @@ Util.buildClassificationList = async function (classification_id = null) {
   })
   classificationList += "</select>"
   return classificationList
+}
+
+/* ****************************************
+* Middleware to check token validity
+**************************************** */
+Util.checkJWTToken = (req, res, next) => {
+  if (req.cookies && req.cookies.jwt) {
+    jwt.verify(
+      req.cookies.jwt,
+      process.env.ACCESS_TOKEN_SECRET,
+      function (err, accountData) {
+        if (err) {
+          req.flash("Please log in")
+          res.clearCookie("jwt")
+          return res.redirect("/account/login")
+        }
+        res.locals.accountData = accountData
+        res.locals.loggedin = 1
+        next()
+      }
+    )
+  } else {
+    next()
+  }
+}
+
+/* ****************************************
+* Small helper: async route error wrapper
+* (keeps routes clean; forwards to global handler)
+**************************************** */
+Util.handleErrors = (fn) => (req, res, next) => Promise
+  .resolve(fn(req, res, next))
+  .catch(next)
+
+/* ****************************************
+ *  Check Login
+ * ************************************ */
+// I want a simple guard I can drop on routes that require the user to be logged in.
+// This relies on res.locals.loggedin which is set by my JWT check above.
+Util.checkLogin = (req, res, next) => {
+  if (res.locals.loggedin) {
+    next()
+  } else {
+    req.flash("notice", "Please log in.")
+    return res.redirect("/account/login")
+  }
 }
 
 module.exports = Util

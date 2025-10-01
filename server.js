@@ -7,7 +7,8 @@
  *************************/
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
-const env = require("dotenv").config()
+require("dotenv").config() // load env early
+const cookieParser = require("cookie-parser") // <- added: cookie-parser for reading JWT cookie
 const app = express()
 const static = require("./routes/static")
 const baseController = require("./controllers/baseController")
@@ -41,9 +42,15 @@ app.use(function(req, res, next){
   next()
 })
 
+// parse cookies for JWT auth
+app.use(cookieParser()) // <- added: enables req.cookies.jwt access across the app
+
 // ADDED: body parsing for JSON + URL-encoded form bodies
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+
+// universal JWT check: if a token exists, verify it, else continue
+app.use(utilities.checkJWTToken) // <- added: validates JWT (no-op if none)
 
 /* ***********************
  * View engine and templates

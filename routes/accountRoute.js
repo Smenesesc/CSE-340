@@ -1,66 +1,55 @@
-/* ******************************************
- * Accounts routes
- * Using inventory route as a pattern
- ******************************************/
 const express = require("express")
 const router = express.Router()
+
 const utilities = require("../utilities")
 const accountController = require("../controllers/accountController")
+const regValidate = require("../utilities/account-validation")
 
-// ADDED: account validators (registration + login)
-const accountValidate = require("../utilities/account-validation")
+/* ****************************************
+*  Default account landing (management) — protected
+* *************************************** */
+// I only want logged-in users to see account management.
+// checkJWTToken runs globally in server.js; this adds the simple gate.
+router.get(
+  "/",
+  utilities.checkLogin,
+  utilities.handleErrors(accountController.buildAccountManagement)
+)
 
-// GET /account/login
-router.get("/login", async (req, res, next) => {
-  try {
-    // delegate to controller (keeps router thin)
-    return accountController.buildLogin(req, res, next)
-  } catch (err) {
-    next(err)
-  }
-})
+/* ****************************************
+*  Deliver login view
+* *************************************** */
+router.get(
+  "/login",
+  utilities.handleErrors(accountController.buildLogin)
+)
 
-/* ******************************************
- * GET /account/register
- ******************************************/
-router.get("/register", async (req, res, next) => {
-  try {
-    return accountController.buildRegister(req, res, next)
-  } catch (err) {
-    next(err)
-  }
-})
+/* ****************************************
+*  Deliver registration view
+* *************************************** */
+router.get(
+  "/register",
+  utilities.handleErrors(accountController.buildRegister)
+)
 
-/* ******************************************
- * POST /account/register
- * Add server-side validation + sticky fields
- ******************************************/
+/* ****************************************
+*  Process Registration (hash done in controller)
+* *************************************** */
 router.post(
   "/register",
-  accountValidate.registrationRules(), // apply rules
-  accountValidate.checkRegData,        // handle errors + stickies
-  async (req, res, next) => {
-    try {
-      // on success, continue into real handler
-      return accountController.registerAccount(req, res, next)
-    } catch (err) {
-      next(err)
-    }
-  }
+  regValidate.registrationRules(),
+  regValidate.checkRegData,
+  utilities.handleErrors(accountController.registerAccount)
 )
 
-/* ******************************************
- * POST /account/login (TEMP for validation testing)
- * Returns a simple string on success so we can
- * confirm the route was reached after validation.
- ******************************************/
+/* ****************************************
+*  Process the login request
+* *************************************** */
 router.post(
   "/login",
-  accountValidate.loginRules(),   // validate fields
-  accountValidate.checkLoginData, // handle errors + sticky email
-  (req, res) => {
-    res.status(200).send("login process") // placeholder until real auth is built
-  }
+  regValidate.loginRules(),
+  regValidate.checkLoginData,
+  utilities.handleErrors(accountController.accountLogin)
 )
 
-module.exports = router // export routes
+module.exports = router
