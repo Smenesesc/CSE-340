@@ -1,14 +1,14 @@
 const express = require("express")
 const router = express.Router()
 const invController = require("../controllers/inventoryController")
+const utilities = require("../utilities") // I want handleErrors for the JSON + edit + update routes
 const {
   classificationRules,
   checkClassification,
   inventoryRules,
   checkInventory,
+  checkUpdateData, // <- added: validation handler for update flow
 } = require("../utilities/inv-validation")
-
-/* ===== Small helper kept from your demo routes (optional showcase) ===== */
 function renderVehicleHTML({ image, name, price, description, color, miles }) {
   return `
     <h1>${name}</h1>
@@ -30,9 +30,30 @@ function renderVehicleHTML({ image, name, price, description, color, miles }) {
 
 /* ===== Assignment Task 1: Management View =====
  * Access only by direct URL: /inv
- * (I’m not linking this from anywhere per the instructions)
  */
 router.get("/inv", invController.buildManagement)
+
+/* ===== JSON endpoint used by management view (AJAX) ===== */
+router.get(
+  "/inv/getInventory/:classification_id",
+  utilities.handleErrors(invController.getInventoryJSON)
+)
+
+/* ===== Edit inventory (step 1: show edit form) ===== */
+// When user clicks "Modify" in the management table, it hits this route with the inv_id.
+router.get(
+  "/inv/edit/:inv_id",
+  utilities.handleErrors(invController.editInventoryView)
+)
+
+/* ===== Update inventory (step 2: persist changes) ===== */
+// I mirror the form action="/inv/update" from the edit-inventory view.
+router.post(
+  "/inv/update",
+  inventoryRules(),      // same rules as "add"
+  checkUpdateData,       // but errors return to the edit view
+  utilities.handleErrors(invController.updateInventory)
+)
 
 /* ===== Assignment Task 2: Add Classification ===== */
 router.get("/inv/add-classification", invController.buildAddClassification)

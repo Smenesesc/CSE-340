@@ -1,8 +1,7 @@
-<% /* Inventory Management — central hub for Tasks 2 & 3 */ %>
+<% /* Inventory Management — central hub for Tasks 2 & 3 + filtered list */ %>
 
 <h1>Inventory Management</h1>
 
-<!-- I want flash messages right up front so I see success/failure instantly -->
 <%- messages() %>
 
 <p>Use the links below to add classifications or inventory.</p>
@@ -11,3 +10,18 @@
   <li><a class="btn" href="/inv/add-classification">Add New Classification</a></li>
   <li><a class="btn" href="/inv/add-inventory">Add New Inventory</a></li>
 </ul>
+
+<!-- New: filtered list by classification -->
+<h2>Manage Inventory</h2>
+<p>Select a classification to view its vehicles.</p>
+
+<!-- show the <select> built in utilities (sticky handled there) -->
+<%- classificationSelect %>
+
+<!-- table to be filled by JS (via fetch to /inv/getInventory/:classification_id) -->
+<table id="inventoryDisplay"></table>
+
+<noscript>JavaScript must be enabled to use this page.</noscript>
+
+<!-- I prefer an absolute path since /js is mounted to /public/js in static.js -->
+<script src="/js/inventory.js"></script>

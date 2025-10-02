@@ -67,9 +67,40 @@ const checkInventory = async (req, res, next) => {
   next()
 }
 
+/* ******************************************
+ * Update Inventory — check + return errors to the EDIT view
+ ******************************************/
+// Same validations as "add", but I also keep inv_id, and re-render the edit view.
+const checkUpdateData = async (req, res, next) => {
+  const errors = validationResult(req)
+
+  // stick everything (including inv_id) back into locals so the form stays sticky
+  const fields = [
+    "inv_id",
+    "inv_make", "inv_model", "inv_year", "inv_description",
+    "inv_image", "inv_thumbnail", "inv_price", "inv_miles",
+    "inv_color", "classification_id"
+  ]
+  fields.forEach(f => res.locals[f] = req.body[f])
+
+  if (!errors.isEmpty()) {
+    const utilities = require("./")
+    const classificationSelect = await utilities.buildClassificationList(req.body.classification_id)
+    const itemName = `${req.body.inv_make || ""} ${req.body.inv_model || ""}`.trim()
+
+    return res.status(400).render("inventory/edit-inventory", {
+      title: "Edit " + itemName,
+      classificationSelect,
+      errors: errors.array(),
+    })
+  }
+  next()
+}
+
 module.exports = {
   classificationRules,
   checkClassification,
   inventoryRules,
   checkInventory,
+  checkUpdateData, // <- export for update flow
 }
