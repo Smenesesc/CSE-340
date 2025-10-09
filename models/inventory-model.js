@@ -115,11 +115,26 @@ async function updateInventory(
   }
 }
 
+/* ***************************
+ *  Delete Inventory Item
+ * ************************** */
+// simple delete by primary key; controller will check rowCount === 1
+async function deleteInventoryItem(inv_id) {
+  try {
+    const sql = "DELETE FROM inventory WHERE inv_id = $1"
+    const data = await pool.query(sql, [inv_id])
+    return data
+  } catch (error) {
+    console.error("Delete Inventory Error: " + error)
+  }
+}
+
 module.exports = {
   getClassifications,
   insertClassification,
   insertInventory,
   getVehicleById,
   getInventoryByClassificationId,
-  updateInventory, // <- added export
+  updateInventory, // <- keep export
+  deleteInventoryItem, // <- added export
 }

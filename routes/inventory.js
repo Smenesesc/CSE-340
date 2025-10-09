@@ -1,14 +1,15 @@
 const express = require("express")
 const router = express.Router()
 const invController = require("../controllers/inventoryController")
-const utilities = require("../utilities") // I want handleErrors for the JSON + edit + update routes
+const utilities = require("../utilities") // I want handleErrors + requireEmployee for admin routes
 const {
   classificationRules,
   checkClassification,
   inventoryRules,
   checkInventory,
-  checkUpdateData, // <- added: validation handler for update flow
+  checkUpdateData, // validation handler for update flow
 } = require("../utilities/inv-validation")
+
 function renderVehicleHTML({ image, name, price, description, color, miles }) {
   return `
     <h1>${name}</h1>
@@ -28,54 +29,92 @@ function renderVehicleHTML({ image, name, price, description, color, miles }) {
   `
 }
 
-/* ===== Assignment Task 1: Management View =====
- * Access only by direct URL: /inv
+/* ===== Assignment Task 1/2: Management View (ADMIN ONLY) =====
+ * Access only by direct URL: /inv  (guarded by requireEmployee)
  */
-router.get("/inv", invController.buildManagement)
+router.get(
+  "/inv",
+  utilities.checkLogin,
+  utilities.requireEmployee,
+  utilities.handleErrors(invController.buildManagement)
+)
 
-/* ===== JSON endpoint used by management view (AJAX) ===== */
+/* ===== JSON endpoint used by management view (ADMIN ONLY) ===== */
 router.get(
   "/inv/getInventory/:classification_id",
+  utilities.checkLogin,
+  utilities.requireEmployee,
   utilities.handleErrors(invController.getInventoryJSON)
 )
 
-/* ===== Edit inventory (step 1: show edit form) ===== */
-// When user clicks "Modify" in the management table, it hits this route with the inv_id.
+/* ===== Edit inventory (ADMIN ONLY) ===== */
 router.get(
   "/inv/edit/:inv_id",
+  utilities.checkLogin,
+  utilities.requireEmployee,
   utilities.handleErrors(invController.editInventoryView)
 )
 
-/* ===== Update inventory (step 2: persist changes) ===== */
-// I mirror the form action="/inv/update" from the edit-inventory view.
+/* ===== Update inventory (ADMIN ONLY) ===== */
 router.post(
   "/inv/update",
+  utilities.checkLogin,
+  utilities.requireEmployee,
   inventoryRules(),      // same rules as "add"
-  checkUpdateData,       // but errors return to the edit view
+  checkUpdateData,       // errors return to the edit view
   utilities.handleErrors(invController.updateInventory)
 )
 
-/* ===== Assignment Task 2: Add Classification ===== */
-router.get("/inv/add-classification", invController.buildAddClassification)
+/* ===== Delete inventory (ADMIN ONLY) ===== */
+router.get(
+  "/inv/delete/:inv_id",
+  utilities.checkLogin,
+  utilities.requireEmployee,
+  utilities.handleErrors(invController.buildDeleteConfirmation)
+)
+
+router.post(
+  "/inv/delete",
+  utilities.checkLogin,
+  utilities.requireEmployee,
+  utilities.handleErrors(invController.deleteInventory)
+)
+
+/* ===== Add Classification (ADMIN ONLY) ===== */
+router.get(
+  "/inv/add-classification",
+  utilities.checkLogin,
+  utilities.requireEmployee,
+  utilities.handleErrors(invController.buildAddClassification)
+)
 
 router.post(
   "/inv/add-classification",
+  utilities.checkLogin,
+  utilities.requireEmployee,
   classificationRules(),
   checkClassification,
-  invController.addClassification
+  utilities.handleErrors(invController.addClassification)
 )
 
-/* ===== Assignment Task 3: Add Inventory ===== */
-router.get("/inv/add-inventory", invController.buildAddInventory)
+/* ===== Add Inventory (ADMIN ONLY) ===== */
+router.get(
+  "/inv/add-inventory",
+  utilities.checkLogin,
+  utilities.requireEmployee,
+  utilities.handleErrors(invController.buildAddInventory)
+)
 
 router.post(
   "/inv/add-inventory",
+  utilities.checkLogin,
+  utilities.requireEmployee,
   inventoryRules(),
   checkInventory,
-  invController.addInventory
+  utilities.handleErrors(invController.addInventory)
 )
 
-/* ===== Existing demo routes (kept) ===== */
+/* ===== Public demo/detail routes (left public on purpose) ===== */
 router.get("/custom", (req, res, next) => {
   try {
     const vehicleHTML = renderVehicleHTML({
@@ -146,7 +185,7 @@ router.get("/truck", (req, res, next) => {
   } catch (e) { next(e) }
 })
 
-/* DB-backed detail by ID (already part of your assignment) */
+/* DB-backed detail by ID (public) */
 router.get("/detail/:invId", (req, res, next) => {
   try { return invController.buildDetail(req, res, next) } catch (e) { next(e) }
 })

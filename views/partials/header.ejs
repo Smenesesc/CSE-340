@@ -1,5 +1,16 @@
 <header id="top-header">
   <a class="brand" href="/">CSE Motors</a>
-  <!-- UPDATE: point to /account/login so it hits the new route -->
-  <a class="account" href="/account/login">My Account</a>
+
+  <!-- when logged in, show Welcome + Logout; when logged out, show My Account -->
+  <nav class="account-nav">
+    <% if (typeof loggedin !== "undefined" && loggedin && accountData) { %>
+      <!-- small "welcome" link that routes to account management -->
+      <a class="account welcome" href="/account/">
+        Welcome <%= accountData.account_firstname %>
+      </a>
+      <a class="account" href="/account/logout">Logout</a>
+    <% } else { %>
+      <a class="account" href="/account/login">My Account</a>
+    <% } %>
+  </nav>
 </header>

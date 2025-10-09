@@ -1,0 +1,57 @@
+<% /* Delete Confirmation — read-only confirmation before permanent delete */ %>
+
+<h1><%= title %></h1>
+
+<!-- tell the client this is permanent -->
+<p>Confirm Deletion - The delete is permanent.</p>
+
+<%- messages() %>
+
+<% if (typeof errors !== "undefined" && errors && errors.length) { %>
+  <div class="form-errors" role="alert" aria-live="assertive">
+    <ul>
+      <% errors.forEach(function(err){ %>
+        <li><%= err.msg %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
+
+<form class="auth-form" action="/inv/delete" method="post" novalidate>
+  <div class="form-grid">
+    <!-- keep only make, model, year, price — all read-only per instructions -->
+    <div class="form-row">
+      <label for="inv_make">Make</label>
+      <input id="inv_make" name="inv_make" type="text" readonly value="<%= (locals.inv_make || inv_make) %>">
+    </div>
+
+    <div class="form-row">
+      <label for="inv_model">Model</label>
+      <input id="inv_model" name="inv_model" type="text" readonly value="<%= (locals.inv_model || inv_model) %>">
+    </div>
+
+    <div class="form-row">
+      <label for="inv_year">Year</label>
+      <input id="inv_year" name="inv_year" type="number" readonly value="<%= (locals.inv_year || inv_year) %>">
+    </div>
+
+    <div class="form-row">
+      <label for="inv_price">Price (USD)</label>
+      <input id="inv_price" name="inv_price" type="number" step="0.01" readonly value="<%= (locals.inv_price || inv_price) %>">
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <!-- no disabled logic here; this is a straight confirmation -->
+    <button class="btn" type="submit">Delete</button>
+  </div>
+
+  <!-- carry inv_id during delete -->
+  <input type="hidden" name="inv_id"
+    <% if (locals.inv_id) { %> value="<%= locals.inv_id %>"
+    <% } else if (typeof inv_id !== 'undefined') { %> value="<%= inv_id %>"
+    <% } %>
+  >
+</form>
+
+<p><a href="/inv">Back to Inventory Management</a></p>

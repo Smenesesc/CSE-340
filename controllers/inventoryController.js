@@ -248,5 +248,62 @@ invController.updateInventory = async function (req, res, next) {
   }
 }
 
-module.exports = invController
+/* ***************************
+ *  Build delete confirmation view (step 1 of delete)
+ * ************************** */
+// same approach as edit: fetch the record, but render a read-only confirmation.
+invController.buildDeleteConfirmation = async function (req, res, next) {
+  try {
+    const inv_id = parseInt(req.params.inv_id, 10)
+    const result = await invModel.getVehicleById(inv_id)
 
+    if (!result.rows || result.rows.length === 0) {
+      const err = new Error("Vehicle not found")
+      err.status = 404
+      return next(err)
+    }
+
+    const itemData = result.rows[0]
+    const itemName = `${itemData.inv_make} ${itemData.inv_model}`
+
+    return res.render("inventory/delete-confirm", {
+      title: "Delete " + itemName,
+      errors: null,
+
+      // I only pass what the confirmation form needs
+      inv_id: itemData.inv_id,
+      inv_make: itemData.inv_make,
+      inv_model: itemData.inv_model,
+      inv_year: itemData.inv_year,
+      inv_price: itemData.inv_price
+    })
+  } catch (e) {
+    next(e)
+  }
+}
+
+/* ***************************
+ *  Delete Inventory Item (step 2 of delete)
+ * ************************** */
+// just like update, but call the model delete and return to /inv on success.
+invController.deleteInventory = async function (req, res, next) {
+  try {
+    const inv_id = parseInt(req.body.inv_id, 10)
+
+    const deleteResult = await invModel.deleteInventoryItem(inv_id)
+    const wasDeleted = !!deleteResult && deleteResult.rowCount === 1
+
+    if (wasDeleted) {
+      req.flash("notice", "The vehicle was successfully deleted.")
+      return res.redirect("/inv/")
+    } else {
+      // failure -> bounce back to the confirmation, keep the user in context
+      req.flash("notice", "Sorry, the delete failed.")
+      return res.redirect(`/inv/delete/${inv_id}`)
+    }
+  } catch (err) {
+    next(err)
+  }
+}
+
+module.exports = invController

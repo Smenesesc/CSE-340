@@ -1,17 +1,27 @@
-<% /* Account Management — default /account view */ %>
+<% /* Account Management — greets based on account_type, shows update link for everyone, and inventory link only for Employee/Admin */ %>
 
 <h1><%= title %></h1>
 
 <%- messages() %>
 
-<% if (typeof errors !== "undefined" && errors && errors.length) { %>
-  <div class="form-errors" role="alert" aria-live="assertive">
-    <ul>
-      <% errors.forEach(function(err){ %>
-        <li><%= err.msg %></li>
-      <% }) %>
-    </ul>
-  </div>
+<%
+// I rely on res.locals.accountData populated by JWT middleware
+const me = (typeof accountData !== "undefined") ? accountData : null
+const isPriv = me && (me.account_type === "Employee" || me.account_type === "Admin")
+%>
+
+<!-- greeting must NOT render the inventory heading for Client -->
+<% if (me) { %>
+  <h2>Welcome <%= me.account_firstname %></h2>
 <% } %>
 
-<p>You're logged in.</p>
+<!-- universal link to update info (Task 3 requirement: appears above inventory section) -->
+<p>
+  <a class="btn" href="/account/update/<%= me ? me.account_id : '' %>">Update account information</a>
+</p>
+
+<!-- visible only to Employee/Admin -->
+<% if (isPriv) { %>
+  <h3>Inventory Management</h3>
+  <p><a class="btn" href="/inv">Go to Inventory Management</a></p>
+<% } %>

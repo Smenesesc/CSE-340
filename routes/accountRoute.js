@@ -8,8 +8,6 @@ const regValidate = require("../utilities/account-validation")
 /* ****************************************
 *  Default account landing (management) — protected
 * *************************************** */
-// I only want logged-in users to see account management.
-// checkJWTToken runs globally in server.js; this adds the simple gate.
 router.get(
   "/",
   utilities.checkLogin,
@@ -50,6 +48,42 @@ router.post(
   regValidate.loginRules(),
   regValidate.checkLoginData,
   utilities.handleErrors(accountController.accountLogin)
+)
+
+/* ****************************************
+*  Logout (Task 6)
+* *************************************** */
+router.get(
+  "/logout",
+  utilities.handleErrors(accountController.logoutAccount)
+)
+
+/* ****************************************
+*  Account Update (Task 4/5)
+*  GET view + POST handlers for info + password
+* *************************************** */
+router.get(
+  "/update/:accountId",
+  utilities.checkLogin, // must be logged in to update
+  utilities.handleErrors(accountController.buildUpdateAccount)
+)
+
+// update base info: firstname/lastname/email
+router.post(
+  "/update",
+  utilities.checkLogin,
+  regValidate.updateAccountRules(),  // new rules for update
+  regValidate.checkUpdateAccountData,
+  utilities.handleErrors(accountController.updateAccount)
+)
+
+// change password
+router.post(
+  "/update-password",
+  utilities.checkLogin,
+  regValidate.updatePasswordRules(), // new rules for password change
+  regValidate.checkUpdatePasswordData,
+  utilities.handleErrors(accountController.updatePassword)
 )
 
 module.exports = router

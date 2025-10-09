@@ -1,6 +1,6 @@
 const invModel = require("../models/inventory-model")
-const jwt = require("jsonwebtoken") // <- added earlier: verify JWT from cookie
-require("dotenv").config() // <- added earlier: load ACCESS_TOKEN_SECRET
+const jwt = require("jsonwebtoken") // verify JWT from cookie
+require("dotenv").config()
 
 const Util = {}
 
@@ -70,7 +70,6 @@ Util.buildVehicleDetail = function (item) {
 
 /* Build the classification <select> for forms — sticky via selected attr */
 Util.buildClassificationList = async function (classification_id = null) {
-  // I reuse the same data as the navbar so options always reflect the DB
   const data = await invModel.getClassifications()
   let classificationList =
     '<select name="classification_id" id="classificationList" required>'
@@ -98,6 +97,7 @@ Util.checkJWTToken = (req, res, next) => {
           res.clearCookie("jwt")
           return res.redirect("/account/login")
         }
+        // make token payload available to every view
         res.locals.accountData = accountData
         res.locals.loggedin = 1
         next()
@@ -110,17 +110,14 @@ Util.checkJWTToken = (req, res, next) => {
 
 /* ****************************************
 * Small helper: async route error wrapper
-* (keeps routes clean; forwards to global handler)
 **************************************** */
 Util.handleErrors = (fn) => (req, res, next) => Promise
   .resolve(fn(req, res, next))
   .catch(next)
 
 /* ****************************************
- *  Check Login
+ *  Check Login (simple guard for protected views)
  * ************************************ */
-// I want a simple guard I can drop on routes that require the user to be logged in.
-// This relies on res.locals.loggedin which is set by my JWT check above.
 Util.checkLogin = (req, res, next) => {
   if (res.locals.loggedin) {
     next()
@@ -128,6 +125,20 @@ Util.checkLogin = (req, res, next) => {
     req.flash("notice", "Please log in.")
     return res.redirect("/account/login")
   }
+}
+
+/* ****************************************
+ *  Require Employee/Admin for inventory admin areas
+ *  I only use this for add/edit/delete management routes (not public views).
+ * ************************************ */
+Util.requireEmployee = (req, res, next) => {
+  const user = res.locals.accountData
+  if (user && (user.account_type === "Employee" || user.account_type === "Admin")) {
+    return next()
+  }
+  // on failure, bounce to login with message (per assignment)
+  req.flash("notice", "You must be an Employee or Admin to access Inventory Management.")
+  return res.redirect("/account/login")
 }
 
 module.exports = Util

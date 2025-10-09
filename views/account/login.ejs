@@ -1,46 +1,92 @@
-<% /* Account Login view — body content only; layout supplies <html>, <head>, and <body> */ %>
+<% /* Account Login view — I added:
+      - autocomplete attributes for username/current-password
+      - aria-invalid toggling when server sends errors
+      - very light client-side required check
+*/ %>
 
-    <!-- page title uses the controller-provided "title" -->
-    <h1><%= title %></h1>
+<h1><%= title %></h1>
 
-    <!-- flash messages -->
-    <%- messages() %>
+<%- messages() %>
 
-    <!-- server-side validation errors (list) -->
-    <% if (typeof errors !== "undefined" && errors.length) { %>
-      <div class="form-errors" role="alert" aria-live="assertive">
-        <ul>
-          <% errors.forEach(function(err){ %>
-            <li><%= err.msg %></li>
-          <% }) %>
-        </ul>
-      </div>
-    <% } %>
+<% const hasErr = (n) => Array.isArray(errors) && errors.some(e => e.path === n); %>
+<% const firstErrMsg = (n) => {
+     if (!Array.isArray(errors)) return null
+     const hit = errors.find(e => e.path === n)
+     return hit ? hit.msg : null
+   }; %>
 
-    <!-- login form -->
-    <section class="account-auth">
-      <!-- POST to /account/login for validation + (temp) success text -->
-      <form id="loginForm" class="auth-form" action="/account/login" method="post" novalidate>
-        <!-- NOTE: using DB field names per Data Trail guidance -->
-        <div class="form-row">
-          <label for="account_email">Email address</label>
-          <!-- sticky email (password never sticky) -->
-          <input id="account_email" name="account_email" type="email" placeholder="you@example.com" required value="<%= locals.account_email %>">
-        </div>
+<% if (typeof errors !== "undefined" && errors.length) { %>
+  <div class="form-errors" role="alert" aria-live="assertive" id="login-error-list">
+    <ul>
+      <% errors.forEach(function(err){ %>
+        <li><%= err.msg %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
 
-        <div class="form-row">
-          <label for="account_password">Password</label>
-          <input id="account_password" name="account_password" type="password" placeholder="••••••••" required>
-        </div>
+<section class="account-auth">
+  <form id="loginForm" class="auth-form" action="/account/login" method="post" novalidate>
+    <div class="form-row">
+      <label for="account_email">Email address</label>
+      <input
+        id="account_email"
+        name="account_email"
+        type="email"
+        placeholder="you@example.com"
+        required
+        autocomplete="username"
+        autocapitalize="none"
+        autocorrect="off"
+        aria-invalid="<%= hasErr('account_email') ? 'true' : 'false' %>"
+        aria-describedby="<%= hasErr('account_email') ? 'account_email-error' : '' %>"
+        value="<%= locals.account_email %>">
+      <% if (hasErr('account_email')) { %>
+        <small class="field-error" id="account_email-error"><%= firstErrMsg('account_email') %></small>
+      <% } %>
+    </div>
 
-        <div class="form-actions">
-          <button class="btn" type="submit">Sign in</button>
-        </div>
-      </form>
+    <div class="form-row">
+      <label for="account_password">Password</label>
+      <input
+        id="account_password"
+        name="account_password"
+        type="password"
+        placeholder="••••••••"
+        required
+        autocomplete="current-password"
+        aria-invalid="<%= hasErr('account_password') ? 'true' : 'false' %>"
+        aria-describedby="<%= hasErr('account_password') ? 'account_password-error' : '' %>">
+      <% if (hasErr('account_password')) { %>
+        <small class="field-error" id="account_password-error"><%= firstErrMsg('account_password') %></small>
+      <% } %>
+    </div>
 
-      <p class="auth-alt">
-        Don’t have an account?
-        <!-- path mirrors /account/login style but points to register -->
-        <a href="/account/register">Create one</a>
-      </p>
-    </section>
+    <div class="form-actions">
+      <button class="btn" type="submit">Sign in</button>
+    </div>
+  </form>
+
+  <p class="auth-alt">
+    Don’t have an account?
+    <a href="/account/register">Create one</a>
+  </p>
+</section>
+
+<script>
+  // quick client-side required check (I keep it minimal)
+  (function () {
+    const form = document.getElementById('loginForm')
+    if (!form) return
+    form.addEventListener('submit', function (e) {
+      const em = document.getElementById('account_email')
+      const pw = document.getElementById('account_password')
+      if (!em.value.trim() || !pw.value.trim()) {
+        e.preventDefault()
+        if (!em.value.trim()) em.setAttribute('aria-invalid','true')
+        if (!pw.value.trim()) pw.setAttribute('aria-invalid','true')
+        ( !em.value.trim() ? em : pw ).focus()
+      }
+    })
+  })()
+</script>

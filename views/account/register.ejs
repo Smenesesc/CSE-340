@@ -1,80 +1,126 @@
-<% /* Account Registration view — body content only; layout supplies <html>, <head>, and <body> */ %>
+<% /* Account Registration view — I added:
+      - autocomplete attributes (given-name, family-name, email, new-password)
+      - aria-invalid + inline error hints when server returns errors
+      - kept the password visibility toggle of course
+*/ %>
 
-    <!-- page title -->
-    <h1><%= title %></h1>
+<h1><%= title %></h1>
 
-    <!-- flash messages -->
-    <%- messages() %>
+<%- messages() %>
 
-    <!-- server-side validation errors (list) -->
-    <% if (typeof errors !== "undefined" && errors.length) { %>
-      <div class="form-errors" role="alert" aria-live="assertive">
-        <ul>
-          <% errors.forEach(function(err){ %>
-            <li><%= err.msg %></li>
-          <% }) %>
-        </ul>
-      </div>
-    <% } %>
+<% const hasErr = (n) => Array.isArray(errors) && errors.some(e => e.path === n); %>
+<% const firstErrMsg = (n) => {
+     if (!Array.isArray(errors)) return null
+     const hit = errors.find(e => e.path === n)
+     return hit ? hit.msg : null
+   }; %>
 
-    <!-- registration form -->
-    <section class="account-auth">
-      <!-- ensure action path + POST method match route -->
-      <form class="auth-form" action="/account/register" method="post" novalidate>
-        <!-- using DB field names per Data Trail guidance -->
-        <div class="form-row">
-          <label for="account_firstname">First name</label>
-          <!-- sticky value via res.locals; safe if undefined -->
-          <input id="account_firstname" name="account_firstname" type="text" placeholder="First name" required value="<%= locals.account_firstname %>">
-        </div>
+<% if (typeof errors !== "undefined" && errors.length) { %>
+  <div class="form-errors" role="alert" aria-live="assertive" id="reg-error-list">
+    <ul>
+      <% errors.forEach(function(err){ %>
+        <li><%= err.msg %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
 
-        <div class="form-row">
-          <label for="account_lastname">Last name</label>
-          <!-- sticky -->
-          <input id="account_lastname" name="account_lastname" type="text" placeholder="Last name" required value="<%= locals.account_lastname %>">
-        </div>
+<section class="account-auth">
+  <form class="auth-form" action="/account/register" method="post" novalidate>
+    <div class="form-row">
+      <label for="account_firstname">First name</label>
+      <input
+        id="account_firstname"
+        name="account_firstname"
+        type="text"
+        placeholder="First name"
+        required
+        autocomplete="given-name"
+        aria-invalid="<%= hasErr('account_firstname') ? 'true' : 'false' %>"
+        aria-describedby="<%= hasErr('account_firstname') ? 'account_firstname-error' : '' %>"
+        value="<%= locals.account_firstname %>">
+      <% if (hasErr('account_firstname')) { %>
+        <small class="field-error" id="account_firstname-error"><%= firstErrMsg('account_firstname') %></small>
+      <% } %>
+    </div>
 
-        <div class="form-row">
-          <label for="account_email">Email address</label>
-          <!-- sticky -->
-          <input id="account_email" name="account_email" type="email" placeholder="you@example.com" required value="<%= locals.account_email %>">
-        </div>
+    <div class="form-row">
+      <label for="account_lastname">Last name</label>
+      <input
+        id="account_lastname"
+        name="account_lastname"
+        type="text"
+        placeholder="Last name"
+        required
+        autocomplete="family-name"
+        aria-invalid="<%= hasErr('account_lastname') ? 'true' : 'false' %>"
+        aria-describedby="<%= hasErr('account_lastname') ? 'account_lastname-error' : '' %>"
+        value="<%= locals.account_lastname %>">
+      <% if (hasErr('account_lastname')) { %>
+        <small class="field-error" id="account_lastname-error"><%= firstErrMsg('account_lastname') %></small>
+      <% } %>
+    </div>
 
-        <div class="form-row">
-          <label for="account_password">Password</label>
-          <!-- DO NOT make password sticky -->
-          <input id="account_password" name="account_password" type="password" placeholder="At least 12 characters" required>
-          <small class="field-hint">
-            Password must be at least 12 characters and include 1 uppercase letter, 1 number, and 1 special character.
-          </small>
-          <!-- optional toggle -->
-          <button class="btn btn-link toggle-pass" type="button" aria-controls="account_password" aria-pressed="false">
-            Show password
-          </button>
-        </div>
+    <div class="form-row">
+      <label for="account_email">Email address</label>
+      <input
+        id="account_email"
+        name="account_email"
+        type="email"
+        placeholder="you@example.com"
+        required
+        autocomplete="email"
+        autocapitalize="none"
+        autocorrect="off"
+        aria-invalid="<%= hasErr('account_email') ? 'true' : 'false' %>"
+        aria-describedby="<%= hasErr('account_email') ? 'account_email-error' : '' %>"
+        value="<%= locals.account_email %>">
+      <% if (hasErr('account_email')) { %>
+        <small class="field-error" id="account_email-error"><%= firstErrMsg('account_email') %></small>
+      <% } %>
+    </div>
 
-        <div class="form-actions">
-          <button class="btn" type="submit">Create account</button>
-        </div>
-      </form>
+    <div class="form-row">
+      <label for="account_password">Password</label>
+      <input
+        id="account_password"
+        name="account_password"
+        type="password"
+        placeholder="At least 12 characters"
+        required
+        autocomplete="new-password"
+        aria-describedby="pw-hint">
+      <small class="field-hint" id="pw-hint">
+        Password must be at least 12 characters and include 1 uppercase letter, 1 number, and 1 special character.
+      </small>
+      <!-- keep the same simple toggle -->
+      <button class="btn btn-link toggle-pass" type="button" aria-controls="account_password" aria-pressed="false">
+        Show password
+      </button>
+    </div>
 
-      <p class="auth-alt">
-        Already have an account?
-        <a href="/account/login">Sign in</a>
-      </p>
-    </section>
+    <div class="form-actions">
+      <button class="btn" type="submit">Create account</button>
+    </div>
+  </form>
 
-    <script>
-      // minimal password visibility toggle (unchanged)
-      (function () {
-        const btn = document.querySelector(".toggle-pass")
-        const input = document.getElementById("account_password")
-        if (!btn || !input) return
-        btn.addEventListener("click", function () {
-          const isText = input.type === "text"
-          input.type = isText ? "password" : "text"
-          this.setAttribute("aria-pressed", (!isText).toString())
-          this.textContent = isText ? "Show password" : "Hide password"
-        })
-      })()
-    </script>
+  <p class="auth-alt">
+    Already have an account?
+    <a href="/account/login">Sign in</a>
+  </p>
+</section>
+
+<script>
+  // minimal password visibility toggle
+  (function () {
+    const btn = document.querySelector(".toggle-pass")
+    const input = document.getElementById("account_password")
+    if (!btn || !input) return
+    btn.addEventListener("click", function () {
+      const isText = input.type === "text"
+      input.type = isText ? "password" : "text"
+      this.setAttribute("aria-pressed", (!isText).toString())
+      this.textContent = isText ? "Show password" : "Hide password"
+    })
+  })()
+</script>
