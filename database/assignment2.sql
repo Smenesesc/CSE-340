@@ -34,3 +34,11 @@ UPDATE inventory
          CASE WHEN POSITION('/images/vehicles/' IN inv_thumbnail) = 0
               THEN REPLACE(inv_thumbnail, '/images/', '/images/vehicles/')
               ELSE inv_thumbnail END;
+
+-- ===========================================
+-- Enhancement: Account lockout support
+-- Adds counters + lock timestamp for failed logins
+-- ===========================================
+ALTER TABLE account
+  ADD COLUMN IF NOT EXISTS failed_attempts INT NOT NULL DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS locked_until   TIMESTAMP NULL;

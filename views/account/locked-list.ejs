@@ -1,0 +1,42 @@
+<% /* Admin-only: list currently locked accounts with unlock action */ %>
+
+<h1><%= title %></h1>
+
+<%- messages() %>
+
+<% if (!list || !list.length) { %>
+  <p>No accounts are currently locked.</p>
+  <p><a class="btn" href="/account/">Back to Account Management</a></p>
+<% } else { %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Account</th>
+        <th>Email</th>
+        <th>Type</th>
+        <th>Attempts</th>
+        <th>Locked Until</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% list.forEach(function(a){ %>
+        <tr>
+          <td><%= a.account_firstname %> <%= a.account_lastname %></td>
+          <td><%= a.account_email %></td>
+          <td><%= a.account_type %></td>
+          <td><%= a.failed_attempts %></td>
+          <td><%= new Date(a.locked_until).toLocaleString() %></td>
+          <td>
+            <form action="/account/security/unlock" method="post">
+              <input type="hidden" name="account_id" value="<%= a.account_id %>">
+              <button class="btn" type="submit">Unlock</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <p><a class="btn" href="/account/">Back to Account Management</a></p>
+<% } %>

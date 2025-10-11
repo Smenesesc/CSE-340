@@ -31,7 +31,7 @@ router.get(
 )
 
 /* ****************************************
-*  Process Registration (hash done in controller)
+*  Process Registration
 * *************************************** */
 router.post(
   "/register",
@@ -41,7 +41,7 @@ router.post(
 )
 
 /* ****************************************
-*  Process the login request
+*  Process the login request (validator runs first)
 * *************************************** */
 router.post(
   "/login",
@@ -51,7 +51,7 @@ router.post(
 )
 
 /* ****************************************
-*  Logout (Task 6)
+*  Logout
 * *************************************** */
 router.get(
   "/logout",
@@ -59,20 +59,19 @@ router.get(
 )
 
 /* ****************************************
-*  Account Update (Task 4/5)
-*  GET view + POST handlers for info + password
+*  Account Update
 * *************************************** */
 router.get(
   "/update/:accountId",
-  utilities.checkLogin, // must be logged in to update
+  utilities.checkLogin,
   utilities.handleErrors(accountController.buildUpdateAccount)
 )
 
-// update base info: firstname/lastname/email
+// update base info
 router.post(
   "/update",
   utilities.checkLogin,
-  regValidate.updateAccountRules(),  // new rules for update
+  regValidate.updateAccountRules(),
   regValidate.checkUpdateAccountData,
   utilities.handleErrors(accountController.updateAccount)
 )
@@ -81,9 +80,26 @@ router.post(
 router.post(
   "/update-password",
   utilities.checkLogin,
-  regValidate.updatePasswordRules(), // new rules for password change
+  regValidate.updatePasswordRules(),
   regValidate.checkUpdatePasswordData,
   utilities.handleErrors(accountController.updatePassword)
+)
+
+/* ****************************************
+*  Admin: security tools (locked accounts)
+* *************************************** */
+router.get(
+  "/security/locked",
+  utilities.checkLogin,
+  utilities.requireEmployee,          // only Employee/Admin may view
+  utilities.handleErrors(accountController.buildLockedAccounts)
+)
+
+router.post(
+  "/security/unlock",
+  utilities.checkLogin,
+  utilities.requireEmployee,          // only Employee/Admin may unlock
+  utilities.handleErrors(accountController.unlockAccount)
 )
 
 module.exports = router

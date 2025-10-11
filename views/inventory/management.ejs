@@ -1,27 +1,27 @@
-<% /* Inventory Management — central hub for Tasks 2 & 3 + filtered list */ %>
+<% /* Account Management — greets based on account_type, shows update link for everyone,
+      Inventory link and Security link only for Employee/Admin */ %>
 
-<h1>Inventory Management</h1>
+<h1><%= title %></h1>
 
 <%- messages() %>
 
-<p>Use the links below to add classifications or inventory.</p>
+<%
+const me = (typeof accountData !== "undefined") ? accountData : null
+const isPriv = me && (me.account_type === "Employee" || me.account_type === "Admin")
+%>
 
-<ul class="actions">
-  <li><a class="btn" href="/inv/add-classification">Add New Classification</a></li>
-  <li><a class="btn" href="/inv/add-inventory">Add New Inventory</a></li>
-</ul>
+<% if (me) { %>
+  <h2>Welcome <%= me.account_firstname %></h2>
+<% } %>
 
-<!-- New: filtered list by classification -->
-<h2>Manage Inventory</h2>
-<p>Select a classification to view its vehicles.</p>
+<p>
+  <a class="btn" href="/account/update/<%= me ? me.account_id : '' %>">Update account information</a>
+</p>
 
-<!-- show the <select> built in utilities (sticky handled there) -->
-<%- classificationSelect %>
+<% if (isPriv) { %>
+  <h3>Inventory Management</h3>
+  <p><a class="btn" href="/inv">Go to Inventory Management</a></p>
 
-<!-- table to be filled by JS (via fetch to /inv/getInventory/:classification_id) -->
-<table id="inventoryDisplay"></table>
-
-<noscript>JavaScript must be enabled to use this page.</noscript>
-
-<!-- I prefer an absolute path since /js is mounted to /public/js in static.js -->
-<script src="/js/inventory.js"></script>
+  <h3>Security Tools</h3>
+  <p><a class="btn" href="/account/security/locked">View locked accounts</a></p>
+<% } %>
